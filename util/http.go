@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/rs/zerolog/log"
 )
 
 func GetWebRoot(r *http.Request) string {
@@ -28,6 +30,7 @@ func FormValue(r *http.Request, name string) string {
 }
 
 func ServerError(w http.ResponseWriter, err error) {
+	log.Error().Err(err).Msg("Server Error")
 	requestError(w, http.StatusInternalServerError, err.Error())
 }
 

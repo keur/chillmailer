@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/mail"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -48,4 +49,10 @@ func GetEnvOrPanic(s string) string {
 func IsEmailValid(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
+}
+
+var WhitespaceRegexp = regexp.MustCompile(`\s`)
+
+func ReplaceWhitespaceWith(s string, rep string) string {
+	return WhitespaceRegexp.ReplaceAllString(s, rep)
 }

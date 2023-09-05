@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"io"
@@ -360,17 +361,23 @@ func serveEnqueueMail(logger *zerolog.Logger, ds datastore.Datastore, mc *mailer
 			util.ServerError(w, err)
 			return
 		}
+		normalizedListName := util.ReplaceWhitespaceWith(listName, "-")
+		fromEmail := fmt.Sprintf("chillmailer-%s@%s", normalizedListName, mxDomain)
+		if !util.IsEmailValid(fromEmail) {
+			util.ServerError(w, errors.New(fmt.Sprintf("Bad email: %s", fromEmail)))
+			return
+		}
+
 		webRoot := util.GetWebRoot(r)
 		go func() {
 			cancelCtx := mc.ContextForMailingList(listName)
 			select {
 			case <-time.After(30 * time.Second):
 				rateCtx := context.Background()
-				sender := fmt.Sprintf("chillmailer-%s@%s", listName, mxDomain)
 				for _, sub := range subscribers {
 					limiter.Wait(rateCtx)
 					unsubscribeLink := webRoot + filepath.Join("/unsubscribe", listName, sub.Email, sub.UnsubToken)
-					if err = mailer.SendMail(sender, sub.Email, subject, body, unsubscribeLink); err != nil {
+					if err = mailer.SendMail(fromEmail, sub.Email, subject, body, unsubscribeLink); err != nil {
 						logger.Error().Err(err)
 					} else {
 						logger.Info().Msgf("Successfully sent email to %s", sub.Email)
