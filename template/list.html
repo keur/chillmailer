@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="/static/main.css">
-    <title>Chill Mailer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/static/main.css">
+  <title>Chill Mailer</title>
 </head>
 
 <body>
@@ -57,7 +57,7 @@
         <button type="submit" style="float:right" class="btn">Enqueue (30 seconds)</button>
       </form>
     </div>
-	</div>
+  </div>
   <script>
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // By default, we show only the first 10 subscribers. The user can check a toggle to show everyone
@@ -93,13 +93,13 @@
       const listName = window.location.pathname.split('/').pop();
       const url = "/unsubscribe/"+listName+"/"+email+"/"+unsubToken;
       console.log(url);
-			const xhr = new XMLHttpRequest();
-			xhr.open("GET", url);
-			xhr.send();
-			xhr.onload = () => {
-				if(xhr.readyState === 4 && xhr.status === 200) {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+      xhr.send();
+      xhr.onload = () => {
+        if(xhr.readyState === 4 && xhr.status === 200) {
           window.location.reload();
-				}
+        }
       }
     }
   }

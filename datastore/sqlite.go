@@ -162,10 +162,11 @@ func (sq *Sqlite) QueryAllMailingLists() ([]MailingListInfo, error) {
           ml.name,
           ml.description,
           ml.time_created,
-          COUNT(s.email)
+          COUNT(s.email) as num_subs
       FROM mailing_list ml
       LEFT JOIN subscriptions s on ml.id = s.list_id
-      GROUP BY ml.id;
+      GROUP BY ml.id
+      ORDER BY num_subs DESC;
   `)
 	if err != nil {
 		return nil, err

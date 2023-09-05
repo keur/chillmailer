@@ -1,34 +1,34 @@
 body {
-   font-family: 'Lato', sans-serif;
-   font-weight: 400;
-   margin: 0;
-   padding: 0;
-   background: #fff;
-   text-align: center;
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  text-align: center;
 }
 
 header {
-    background: #212d45;
-    color: #fff;
-    padding: 25px;
+  background: #212d45;
+  color: #fff;
+  padding: 25px;
 }
 
 .container {
-    padding: 2em;
+  padding: 2em;
 }
 
 .btn {
-    display: inline-block;
-    border: 1px solid;
-    padding: 6px;
-    background: #3b5998;
-    color: #fff;
-    border-radius: 1px;
-    text-decoration: none;
+  display: inline-block;
+  border: 1px solid;
+  padding: 6px;
+  background: #3b5998;
+  color: #fff;
+  border-radius: 1px;
+  text-decoration: none;
 }
 
 .btn:hover {
-    background: #2d4373;
+  background: #2d4373;
 }
 
 .btn-danger {
@@ -40,22 +40,22 @@ header {
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 th, td {
-    padding: 8px;
-    border: 1px solid #ddd;
+  padding: 8px;
+  border: 1px solid #ddd;
 }
 
 th {
-    background: #212d45;
-    color: #fff;
+  background: #212d45;
+  color: #fff;
 }
 
 tr:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 td .gg-copy {
@@ -63,18 +63,19 @@ td .gg-copy {
 }
 
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
 }
+
 .modal-content {
   background-color: #fefefe;
   margin: auto;
@@ -87,16 +88,17 @@ ul {
   padding-left:0;
   list-style: none;
 }
+
 li {
   padding:4px;
 }
 
 .modal table, .modal caption, .modal tbody, .modal tfoot, .modal thead, .modal tr, .modal th, .modal td {
-    margin: 0;
-    border: 0;
-    outline: 0;
-    font-size: 100%;
-    background: transparent;
+  margin: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+  background: transparent;
 }
 
 
@@ -175,6 +177,7 @@ input:focus, textarea:focus {
   top: 8px;
   left: 4px
 }
+
 .gg-remove:hover {
   color: #91423b;
 }
