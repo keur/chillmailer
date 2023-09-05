@@ -12,11 +12,13 @@ import (
 )
 
 func GetWebRoot(r *http.Request) string {
-	proto := "http://"
-	if r.TLS != nil {
-		proto = "https://"
+	var proto string = "http"
+	if xproto := r.Header.Get("X-Forwarded-Proto"); xproto != "" {
+		proto = xproto
+	} else if r.TLS != nil {
+		proto = "https"
 	}
-	return proto + r.Host
+	return proto + "://" + r.Host
 }
 
 func NewTemplate(filename string) (*template.Template, error) {

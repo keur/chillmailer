@@ -164,6 +164,8 @@ type IndexData struct {
 
 func serveIndex(ds datastore.Datastore) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		webRoot := util.GetWebRoot(r)
+		log.Info().Msgf("Webroot is %s", webRoot)
 		infos, err := ds.QueryAllMailingLists()
 		if err != nil {
 			util.ServerError(w, err)
