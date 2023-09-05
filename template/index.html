@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/static/main.css">
+    <title>Chill Mailer</title>
+</head>
+
+<body>
+    <header style="cursor:pointer;" onclick="document.location='/admin'">
+      <h2>Chill Mailer</h2>
+    </header>
+    <div class="container">
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Date Created</th>
+          <th>Number of Subscribers</th>
+        </tr>
+        {{range .Infos}}
+        <tr style="cursor:pointer;" onclick="window.location='/admin/list/display/{{.Name}}'"></td>
+          <td>{{.Name}}</td>
+          <td>{{.Description}}</td>
+          <td>{{.TimeCreated}}</td>
+          <td>{{.NumSubscribers}}</td>
+        </tr>
+        {{end}}
+      </table>
+      <a href="#" id="new_list" style="float:right" class="btn">New List</a>
+    </div>
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <form action="/admin/create-list" method="POST">
+        <table>
+          <tr>
+            <td><label for="name">Name</label></td>
+            <td><input type="text" name="name" id="list_name" required /></td>
+          </tr>
+          <tr>
+            <td><label for="description">Description</label></td>
+            <td><input type="description" name="description" id="list_description" required /></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><button type="submit" style="float:right" class="btn">Create</a><td>
+          </tr>
+        </table>
+        </form>
+      </div>
+		</div>
+</div>
+<script>
+  const newListBtn = document.getElementById("new_list");
+  const modal   = document.getElementById("modal");
+
+  const listNameInput         = document.getElementById("list_name");
+  const listDescriptionInput  = document.getElementById("list_description");
+  newListBtn.onclick = function() {
+    modal.style.display = "block";
+  }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+      listNameInput.value = ""
+      listDescriptionInput.value = ""
+    }
+  }
+</script>
+</body>
+
+</html>
