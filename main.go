@@ -223,7 +223,6 @@ func serveSubscribe(ds datastore.Datastore) http.HandlerFunc {
 		// CORS
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		util.GoBackWhereYouCameFrom(w, r)
 	})
 }
 
@@ -241,7 +240,7 @@ func serveUnsubscribe(ds datastore.Datastore) http.HandlerFunc {
 			util.UserError(w, fmt.Sprintf("Provided invalid mailing list: %s", listName))
 			return
 		}
-
+		log.Info().Msgf("Unsubscribing from list %d", listID)
 		if err = ds.UnsubscribeRequest(listID, email, unsubToken); err != nil {
 			if err == sql.ErrNoRows {
 				util.NotFound(w, fmt.Sprintf("Email %s not found on list %s", email, listName))
@@ -251,9 +250,9 @@ func serveUnsubscribe(ds datastore.Datastore) http.HandlerFunc {
 				return
 			}
 		}
+		// CORS
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		io.WriteString(w, "You have been unsubscribed")
-		util.GoBackWhereYouCameFrom(w, r)
+		http.ServeFile(w, r, "./static/unsubscribe.html")
 	})
 }
 
