@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"crypto/subtle"
 	"database/sql"
 	"errors"
 	"time"
@@ -146,7 +147,7 @@ func (sq *Sqlite) UnsubscribeRequest(listID int, email string, unsubToken string
 	if err != nil {
 		return err
 	}
-	if unsubToken != actualToken {
+	if subtle.ConstantTimeCompare([]byte(unsubToken), []byte(actualToken)) != 1 {
 		return ErrorBadToken
 	}
 	_, err = sq.Exec("DELETE FROM subscriptions WHERE list_id = ? AND email = ?", listID, email)
