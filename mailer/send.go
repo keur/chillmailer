@@ -76,34 +76,38 @@ func sendMessage(conn *TlsSmtpConn, from string, to string, subject string, body
 
 	c, err := smtp.NewClient(conn.Conn, conn.Host)
 	if err != nil {
-		return nil
+		return err
 	}
 	defer func() {
-		quitErr := c.Quit()
-		if err != nil {
+		if quitErr := c.Quit(); err == nil {
 			err = quitErr
 		}
 	}()
 
 	// Auth
 	if err = c.Auth(conn.Auth); err != nil {
-		return nil
+		return err
 	}
 
 	// To && From
 	if err = c.Mail(fromAddr.Address); err != nil {
-		return nil
+		return err
 	}
 
 	if err = c.Rcpt(toAddr.Address); err != nil {
-		return nil
+		return err
 	}
 
 	// Data
 	w, err := c.Data()
 	if err != nil {
-		return nil
+		return err
 	}
+	defer func() {
+		if closeErr := c.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 
 	// Setup headers
 	headers := make(map[string]string)
@@ -120,7 +124,7 @@ func sendMessage(conn *TlsSmtpConn, from string, to string, subject string, body
 	htmlBuffer := new(bytes.Buffer)
 	tmpl, err := util.NewTemplate("email.html")
 	if err != nil {
-		return nil
+		return err
 	}
 	pageData := EmailData{Subject: subject, Body: htmlifyBody(body), UnsubscribeLink: unsubscribeLink}
 	if err = tmpl.Execute(htmlBuffer, &pageData); err != nil {
@@ -129,10 +133,9 @@ func sendMessage(conn *TlsSmtpConn, from string, to string, subject string, body
 	message += "\r\n" + htmlBuffer.String()
 	_, err = io.WriteString(w, message)
 	if err != nil {
-		return nil
+		return err
 	}
 
-	err = w.Close()
 	return err
 }
 
