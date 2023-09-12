@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	"html"
 	"io"
 	"io/ioutil"
 	"net"
@@ -199,6 +199,10 @@ func serveSubscribe(ds datastore.Datastore) http.HandlerFunc {
 		err = json.Unmarshal(body, payload)
 		if err != nil {
 			util.ServerError(w, err)
+			return
+		}
+		if html.EscapeString(payload.Email) != payload.Email {
+			util.Forbidden(w, "Goodbye")
 			return
 		}
 		if !util.IsEmailValid(payload.Email) {
