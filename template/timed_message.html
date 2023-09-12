@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unsubscribed</title>
+  <title>{{.Title}}</title>
   <script>
     window.onload = function() {
       if(document.referrer) {
@@ -25,7 +25,7 @@
   </script>
 </head>
 <body>
-  <h4>You have been unsubscribed</h4>
+  <h4>{{.Message}}</h4>
   <p id="redirect-msg">Redirecting in <span id="counter">5</span> seconds...</p>
 </body>
 </html>

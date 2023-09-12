@@ -31,11 +31,9 @@ send email blasts to your subscribers.
 #### Subscribe
 
 ```
-POST /subscribe
-{
-  "email":"mail@example.com",
-  "list":"Blog Example",
-}
+POST /unsubscribe
+  -H "Content-Type: application/x-www-form-urlencoded"
+  -d "list=Blog&email=mail@example.com"
 ```
 
 #### Unsubscribe

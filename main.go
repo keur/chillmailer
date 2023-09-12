@@ -3,12 +3,10 @@ package main
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"html"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -183,43 +181,62 @@ func serveIndex(ds datastore.Datastore) http.HandlerFunc {
 	})
 }
 
-type SubscribePayload struct {
-	Email string `json:"email"`
-	List  string `json:"list"`
+type TimedMessagePageData struct {
+	Title   string
+	Message string
 }
 
 func serveSubscribe(ds datastore.Datastore) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		body, err := ioutil.ReadAll(r.Body)
+		err := r.ParseForm()
 		if err != nil {
 			util.ServerError(w, err)
 			return
 		}
-		payload := &SubscribePayload{}
-		err = json.Unmarshal(body, payload)
-		if err != nil {
-			util.ServerError(w, err)
+		email := util.FormValue(r, "email")
+		list := util.FormValue(r, "list")
+		if email == "" || list == "" {
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		if html.EscapeString(payload.Email) != payload.Email {
+		if html.EscapeString(email) != email {
 			util.Forbidden(w, "Goodbye")
 			return
 		}
-		if !util.IsEmailValid(payload.Email) {
-			util.UserError(w, fmt.Sprintf("Provided invalid email: %s", payload.Email))
+		if !util.IsEmailValid(email) {
+			util.UserError(w, fmt.Sprintf("Provided invalid email: %s", email))
 			return
 		}
-		listID, err := ds.GetMailingListID(payload.List)
+		listID, err := ds.GetMailingListID(list)
 		if err != nil {
 			util.ServerError(w, err)
 			return
 		}
 		if listID == datastore.MailingListNoExist {
-			util.UserError(w, fmt.Sprintf("Provided invalid mailing list: %s", payload.List))
+			util.UserError(w, fmt.Sprintf("Provided invalid mailing list: %s", list))
 			return
 		}
 
-		if err = ds.SubscribeToMailingList(listID, payload.Email); err != nil {
+		alreadySubbed := false
+		if err = ds.SubscribeToMailingList(listID, email); err != nil {
+			if datastore.IsUniqueConstraintError(err) {
+				alreadySubbed = true
+			} else {
+				util.ServerError(w, err)
+				return
+			}
+		}
+
+		pageData := TimedMessagePageData{Title: "Subscribed", Message: "You have been subscribed."}
+		if alreadySubbed {
+			pageData.Message = "You are already subsubcribed"
+		}
+		tmpl, err := util.NewTemplate("timed_message.html")
+		if err != nil {
+			util.ServerError(w, err)
+			return
+		}
+		if err = tmpl.Execute(w, &pageData); err != nil {
 			util.ServerError(w, err)
 			return
 		}
@@ -244,7 +261,7 @@ func serveUnsubscribe(ds datastore.Datastore) http.HandlerFunc {
 			util.UserError(w, fmt.Sprintf("Provided invalid mailing list: %s", listName))
 			return
 		}
-		log.Info().Msgf("Unsubscribing from list %d", listID)
+		log.Info().Msgf("Unsubscribing %s from list %d", email, listID)
 		if err = ds.UnsubscribeRequest(listID, email, unsubToken); err != nil {
 			if err == sql.ErrNoRows {
 				util.NotFound(w, fmt.Sprintf("Email %s not found on list %s", email, listName))
@@ -254,9 +271,19 @@ func serveUnsubscribe(ds datastore.Datastore) http.HandlerFunc {
 				return
 			}
 		}
+		pageData := TimedMessagePageData{Title: "Unsubscribe", Message: "You have been unsubscribed."}
+		tmpl, err := util.NewTemplate("timed_message.html")
+		if err != nil {
+			util.ServerError(w, err)
+			return
+		}
+		if err = tmpl.Execute(w, &pageData); err != nil {
+			util.ServerError(w, err)
+			return
+		}
+
 		// CORS
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		http.ServeFile(w, r, "./static/unsubscribe.html")
 	})
 }
 
